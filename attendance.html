@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Attendance Calculator</title>
+</head>
+<body>
+    <h2>Attendance Calculator</h2>
+    
+    <div>
+        <label for="held">Total Classes Held:</label><br>
+        <input type="number" id="held" min="0"><br><br>
+        
+        <label for="attended">Total Classes Attended:</label><br>
+        <input type="number" id="attended" min="0"><br><br>
+        
+        <label for="target">Target Attendance % (e.g. 75):</label><br>
+        <input type="number" id="target" value="75" min="1" max="100"><br><br>
+        
+        <button onclick="calculateAttendance()">Calculate</button>
+    </div>
+
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <script>
+        function calculateAttendance() {
+            var held = parseInt(document.getElementById('held').value);
+            var attended = parseInt(document.getElementById('attended').value);
+            var target = parseInt(document.getElementById('target').value);
+            var resultDiv = document.getElementById('result');
+
+            // Input validation
+            if (isNaN(held) || isNaN(attended) || isNaN(target)) {
+                resultDiv.innerHTML = "Please fill out all fields with numbers.";
+                return;
+            }
+            if (attended > held) {
+                resultDiv.innerHTML = "Error: Attended classes cannot be greater than total classes held.";
+                return;
+            }
+            if (held === 0) {
+                resultDiv.innerHTML = "Total classes held must be greater than 0.";
+                return;
+            }
+
+            // Calculate current percentage
+            var currentPercentage = (attended / held) * 100;
+            var outputHTML = "<strong>Current Attendance: " + currentPercentage.toFixed(2) + "%</strong><br><br>";
+
+            // Calculate classes needed to attend or classes you can miss
+            if (currentPercentage >= target) {
+                var classesCanMiss = 0;
+                while (((attended) / (held + classesCanMiss + 1)) * 100 >= target) {
+                    classesCanMiss++;
+                }
+                outputHTML += "Status: On track. You can miss the next " + classesCanMiss + " class(es) and still keep your attendance at or above " + target + "%.";
+            } else {
+                var classesNeeded = 0;
+                while (((attended + classesNeeded) / (held + classesNeeded)) * 100 < target) {
+                    classesNeeded++;
+                }
+                outputHTML += "Status: Falling behind. You need to attend the next " + classesNeeded + " consecutive class(es) to reach " + target + "%.";
+            }
+
+            resultDiv.innerHTML = outputHTML;
+        }
+    </script>
+</body>
+</html>
